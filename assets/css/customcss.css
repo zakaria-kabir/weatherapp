@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Anybody&display=swap');
+* {
+  padding: 0;
+  margin: 0;
+}
+body {
+  background: url('../img/bg.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+p {
+  color: white;
+}
+.text-muted {
+  color: rgb(208, 208, 208) !important;
+}
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+  color: #495057;
+  background-color: rgba(255, 255, 255, 0.646);
+  border-color: #c3c3c3 #dee2e6 #fff;
+}
+.nav-link h1,
+.nav-link h2,
+.nav-link h3,
+.nav-link h4,
+.nav-link h5,
+.nav-link p {
+  color: rgb(90, 170, 255);
+}
+.nav-link.active h1,
+.nav-link.active h2,
+.nav-link.active h3,
+.nav-link.active h4,
+.nav-link.active h5,
+.nav-link.active p {
+  color: rgb(44, 44, 44);
+}
+p {
+  margin: 0 0 0.5em 0;
+}
+.nav,
+.card {
+  background-color: rgba(42, 42, 42, 0.456);
+}
+body.Thunderstorm {
+  background: url('../img/thunderstorm.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+body.Drizzle {
+  background: url('../img/drizzle.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+body.Rain {
+  background: url('../img/rain.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+body.Snow {
+  background: url('../img/snow.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+body.Mist {
+  background: url('../img/mist.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+body.Clouds {
+  background: url('../img/clouds.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+body.Clear {
+  background: url('../img/clear.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+body.Smoke {
+  background: url('../img/haze.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+body.Haze {
+  background: url('../img/haze.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+body.Dust {
+  background: url('../img/dust.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+body.Fog {
+  background: url('../img/fog.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+body.Sand {
+  background: url('../img/sand.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+body.Ash {
+  background: url('../img/ash.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+body.Squall {
+  background: url('../img/squall.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+body.Tornado {
+  background: url('../img/tornado.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+input[type="search"] {
+  background-color : #d1d1d12b !important 
+}
