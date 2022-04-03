@@ -133,7 +133,7 @@ if (!$content) {
                         </h1>
                     </div>
                     <div class="col-md-4 text-md-start text-center d-flex flex-column justify-content-center">
-                        <p class="">
+                        <p class="" style="color: rgb(225, 225, 225);">
                             <?php
                             echo "Max temp: " . $newweather->temp_max . "&deg; C<br>" . "Min Temp: " . $newweather->temp_min . "&deg; C";
                             ?>
@@ -141,7 +141,7 @@ if (!$content) {
                     </div>
 
                 </div>
-                <div class="pb-1">
+                <div class=" pb-1 mt-md-n4">
                     <h3 class="d-inline">
                         <?php
                         echo $newweather->type;
@@ -158,16 +158,22 @@ if (!$content) {
                     echo '<i class="fa-regular fa-clock"></i> Updated as of: ' . $newweather->time;
                     ?>
                 </p>
-                <p>
+                <p class="mb-0">
                     <?php
                     echo '
                     <i class="fa-solid fa-temperature-quarter"> </i> Feels like: ' . $newweather->feels_like . '&deg; C &emsp;<i class="fas fa-compress-arrows-alt"></i> Pressure: ' . $newweather->pressure . 'hPa &emsp;<i class="fas fa-tint"></i> Humidity: ' . $newweather->humidity . '% &emsp;<i class="fa-solid fa-eye"></i> Visibility: ' . ($newweather->visibility / 1000) . 'Km';
                     ?>
                 </p>
+                <p>
+                    <?php
+                    echo '
+                    <i class="fa-solid fa-wind"> </i> Wind Speed: ' . $newweather->wind_speed . 'm/s &emsp;<i class="fa-solid fa-angles-up"></i> Wind Degree: ' . $newweather->wind_degree . '&deg &emsp;<i class="fa-solid fa-cloud"></i> Cloud: ' . $newweather->cloud . '%';
+                    ?>
+                </p>
             </section>
         </div>
         <!-- eof heading -->
-        <section class="mx-3">
+        <section class="mx-3 mb-4">
             <?php
             if (!isset($_POST["city"])) {
                 $url = "https://api.openweathermap.org/data/2.5/forecast?q=dhaka&appid=d705900452bd53d61fae15651c6fed92&units=metric";
@@ -220,33 +226,64 @@ if (!$content) {
             getDayHrwisedata($dayArr, $dc);
             $tabmenu = '';
             $tabcontent = '';
+            $tabsubsubcontent = '<div class="tab-content details-tabcontent">';
+            // details of an hour
+            function daydetails($hr, $timeid)
+            {
+                global $tabsubsubcontent;
+                $tabsubsubcontent .= '
+                <div class="tab-pane fade" id="' . $timeid . '" role="tabpanel" aria-labelledby="profile-tab"><h4 class="text-decoration-underline"> Details of this hour</h4><p class="text-muted d-inline"><i class="fa-solid fa-temperature-full text-white"></i> Max temp: <span class="text-white">'
+                    . $hr->temp_max . '&deg C</span></p><p class="text-muted d-inline">&emsp;<i class="fa-solid fa-temperature-empty  text-white"></i> Min temp: <span class="text-white">' .
+                    $hr->temp_min . '&deg C</span></p><p class="text-muted d-inline">&emsp;<i class="fa-solid fa-temperature-half  text-white"></i> Feels Like: <span class="text-white">' .
+                    $hr->feels_like . '&deg C</span></p><div></div><p class="text-muted d-inline"><i class="fas fa-compress-arrows-alt  text-white"></i> Pressure: <span class="text-white">' .
+                    $hr->pressure . 'hPa</span></p><p class="text-muted d-inline">&emsp;<i class="fas fa-tint  text-white"></i> Humidity: <span class="text-white">' .
+                    $hr->humidity . '%</span></p><p class="text-muted d-inline">&emsp;<i class="fa-solid fa-eye text-white"></i> Visibility: <span class="text-white">' .
+                    ($hr->visibility) / 1000 . 'Km</span></p><div></div><p class="text-muted d-inline"><i class="fa-solid fa-wind text-white"></i> Wind Speed: <span class="text-white">' .
+                    $hr->wind_speed . 'm/s</span></p><p class="text-muted d-inline">&emsp;<i class="fa-solid fa-angles-up text-white"></i> Wind Degree: <span class="text-white">' .
+                    $hr->wind_degree . '&deg</span></p><p class="text-muted d-inline">&emsp;<i class="fa-solid fa-cloud text-white"></i> Cloud: <span class="text-white">' .
+                    $hr->cloud . '%</span></p>
+                </div>';
+            }
+            // daily 3hr interval forcast
             function daily3hr($dayArr, $day)
             {
                 global $tabcontent;
+                global $tabsubsubcontent;
                 foreach ($dayArr as $arr) {
                     $tabsubcontent = '<div class="card-group">';
+                    $tabsubcontent .= '<ul class="nav nav-tabs" id="myTab" role="tablist">';
                     foreach ($arr as $hr) {
+
                         if ($hr->day == $day) {
+                            $stime = date_create_from_format('g:i a', $hr->time);
+                            $timeid = $day . date_format($stime, 'gia');
                             $tabsubcontent .= '
+                            <li class="nav-item" role="presentation">
+                            <button class="nav-link p-0" id="' . $timeid . '-tab" data-bs-toggle="tab" data-bs-target="#' . $timeid . '" type="button" role="tab" aria-controls="home" aria-selected="false">
                             <div class="card">
                                 <i><img src="http://openweathermap.org/img/wn/' . $hr->weather_icon . '@2x.png" class=" " alt=""></i>
+                                 
                                 <div class="card-body">
                                     <h5 class="card-title">' . $hr->temp . '&deg; C</h5>
-                                    <p class="card-text">' . $hr->type . ' <span class="text-muted">( ' . $hr->typedescription . ' )</p>
-                                    <p class="card-text">' . $hr->humidity . '</p>
+                                    <p class="card-text">' . $hr->type . ' <span class="text-muted"> (' . $hr->typedescription . ')</p>                     
                                 </div>
+                               
                                 <div class="card-footer">
                                     <small class="text-muted">' . $hr->time . '</small>
                                 </div>
                             </div>
+                             </button>
+                             </li>
                         ';
+                            daydetails($hr, $timeid);
                         }
                     }
-                    $tabsubcontent .= '</div>';
+                    $tabsubcontent .= '</ul></div>' . $tabsubsubcontent . '</div>';
                     $tabcontent .= $tabsubcontent;
                     $tabsubcontent = '';
                 }
             }
+            // 5 days forcast
             function day5($dayArr)
             {
                 $count = 0;
@@ -293,21 +330,21 @@ if (!$content) {
             }
             day5($dayArr);
             ?>
-            <div>
-                <h3>
+            <div class="text-center d-flex flex-column justify-content-center align-items-center">
+                <h3 class="text-decoration-underline">
                     5 Day Forecast
                 </h3>
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <ul class="nav nav-tabs item" id="myTab" role="tablist">
                     <?php
                     echo $tabmenu;
                     ?>
                 </ul>
-                <h3>
+                <h3 class="text-decoration-underline mt-2">
                     3 Hour Forecast
                 </h3>
                 <div class="tab-content" id="myTabContent">
                     <?php
-                    echo $tabcontent;
+                    echo  $tabcontent;
                     ?>
                 </div>
             </div>
