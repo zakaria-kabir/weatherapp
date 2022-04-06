@@ -118,7 +118,7 @@ if (!$content) {
                 </h2>
                 <span class="text-muted">
                     <?php
-                    echo '<span class="text-muted">Longitude: ' . $newweather->lon . '&deg N&emsp; Latitude: ' . $newweather->lon . '&deg E </span>';
+                    echo '<span class="text-muted">Longitude: ' . $newweather->lon . '&deg N&emsp; Latitude: ' . $newweather->lat . '&deg E </span>';
                     ?>
                 </span>
                 <div class="row">
@@ -183,7 +183,6 @@ if (!$content) {
             $content = file_get_contents($url);
             $dc = json_decode($content);
             include "./include/timezone.php";
-
             function getDayHrwisedata(&$dayArr, $dc)
             {
                 $count = 0;
@@ -208,6 +207,8 @@ if (!$content) {
                     $newweatherhr->visibility = $hr3->visibility;
                     $newweatherhr->cloud = $hr3->clouds->all;
                     $newweatherhr->unix = $hr3->dt;
+
+
                     if (empty($newarr)) {
                         array_push($newarr, $newweatherhr);
                     } else {
@@ -216,11 +217,13 @@ if (!$content) {
                         } else {
                             array_push($dayArr, $newarr);
                             $newarr = array();
-                            $count = -1;
+                            array_push($newarr, $newweatherhr);
+                            $count = 0;
                         }
                     }
                     $count++;
                 }
+                array_push($dayArr, $newarr);
             }
             $dayArr = array();
             getDayHrwisedata($dayArr, $dc);
@@ -245,6 +248,95 @@ if (!$content) {
                 </div>';
             }
             // daily 3hr interval forcast
+            $temparr = array();
+            $labelarr = array();
+            $countchart = 0;
+            $label = '';
+            $temp = '';
+            ?>
+            <script>
+                function chartshow(l, d, count, date, icon) {
+                    let chartStatus = Chart.getChart("myChart");
+                    if (chartStatus != undefined) {
+                        chartStatus.destroy();
+                    }
+                    var img = [];
+                    for (let i = 0; i < icon.length; i++) {
+                        img[i] = new Image(50, 50);
+                        img[i].src = icon[i];
+                    }
+                    var ctx = document.getElementById("myChart").getContext("2d");
+                    Chart.defaults.font.size = 16;
+                    Chart.defaults.color = "#fff";
+                    var myChart = new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels: l,
+                            datasets: [{
+                                data: d,
+                                label: 'Temparature °C',
+                                borderWidth: 2,
+                                borderColor: "#767676",
+                                lineTension: 0.6,
+                                pointStyle: img,
+                            }, ]
+                        },
+                        options: {
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: date,
+                                    font: {
+                                        size: 24
+                                    }
+                                },
+
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    offset: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Time Frame'
+                                    }
+                                },
+                                y: {
+                                    offset: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Temparature ℃'
+                                    }
+                                }
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
+                        }
+                    })
+                }
+
+                function chart(day, count) {
+                    var x = document.getElementById("chart-container");
+                    if (x.style.display == "none") {
+                        x.style.display = "block";
+                    }
+                    var temp = [];
+                    var label = [];
+                    var icon = [];
+                    var dayArr = <?php echo (json_encode($dayArr)); ?>;
+                    var get = dayArr[count];
+                    var date = get[0].date;
+                    for (let i = 0; i < get.length; i++) {
+                        temp.push(get[i].temp);
+                        label.push(get[i].time);
+                        icon.push("http://openweathermap.org/img/wn/" + get[i].weather_icon + ".png");
+                    }
+                    chartshow(label, temp, count, date, icon);
+                }
+            </script>
+            <?php
             function daily3hr($dayArr, $day)
             {
                 global $tabcontent;
@@ -253,7 +345,6 @@ if (!$content) {
                     $tabsubcontent = '<div class="card-group">';
                     $tabsubcontent .= '<ul class="nav nav-tabs" id="myTab" role="tablist">';
                     foreach ($arr as $hr) {
-
                         if ($hr->day == $day) {
                             $stime = date_create_from_format('g:i a', $hr->time);
                             $timeid = $day . date_format($stime, 'gia');
@@ -287,6 +378,7 @@ if (!$content) {
             function day5($dayArr)
             {
                 $count = 0;
+                $c = 0;
                 global $tabmenu;
                 global $tabcontent;
                 $daylist = array();
@@ -294,11 +386,12 @@ if (!$content) {
                     $flag = false;
                     foreach ($arr as $hr) {
                         $day = $hr->day;
+                        $d = "'$day'";
                         array_push($daylist, $day);
                         if ($count == 0 && $flag == false) {
                             $tabmenu .= '
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="' . $day . '-tab" data-bs-toggle="tab" data-bs-target="#' . $day . '"type="button" role="tab" aria-controls="' . $day . '" aria-selected="true"><p>' . $day . ", " . $hr->date . '</p><i><img src="http://openweathermap.org/img/wn/' . $hr->weather_icon . '.png" alt=""></i><h4>' . $hr->temp . '&deg; C</h4><p>' . $hr->type . '</p> </button>
+                        <li class="nav-item" role="presentation ">
+                            <button class="nav-link active" id="' . $day . '-tab" data-bs-toggle="tab" data-bs-target="#' . $day . '"type="button" role="tab" aria-controls="' . $day . '" aria-selected="true" onclick="chart(' . $d . ',' . json_encode($c) . ')"><p>' . $day . ", " . $hr->date . '</p><i><img src="http://openweathermap.org/img/wn/' . $hr->weather_icon . '.png" alt=""></i><h4>' . $hr->temp . '&deg; C</h4><p>' . $hr->type . '</p> </button>
                         </li>
                         ';
                             $tabcontent .= '
@@ -309,10 +402,11 @@ if (!$content) {
                         </div>
                         ';
                             $flag = true;
+                            $c++;
                         } elseif ($day != $daylist[$count - 1] && $flag == false) {
                             $tabmenu .= '
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="' . $day . '-tab" data-bs-toggle="tab" data-bs-target="#' . $day . '"type="button" role="tab" aria-controls="' . $day . '" aria-selected="false"><p>' . $day . ", " . $hr->date . '</p><i><img src="http://openweathermap.org/img/wn/' . $hr->weather_icon . '.png" alt=""></i><h3>' . $hr->temp . '&deg; C</h3><p>' . $hr->type . '</p> </button>
+                            <button class="nav-link" id="' . $day . '-tab" data-bs-toggle="tab" data-bs-target="#' . $day . '"type="button" role="tab" aria-controls="' . $day . '" aria-selected="false" onclick="chart(' . $d . ',' . json_encode($c) . ')"><p>' . $day . ", " . $hr->date . '</p><i><img src="http://openweathermap.org/img/wn/' . $hr->weather_icon . '.png" alt=""></i><h3>' . $hr->temp . '&deg; C</h3><p>' . $hr->type . '</p> </button>
                         </li>
                         ';
                             $tabcontent .= '
@@ -323,6 +417,7 @@ if (!$content) {
                         </div>
                         ';
                             $flag = true;
+                            $c++;
                         }
                         $count++;
                     }
@@ -342,7 +437,12 @@ if (!$content) {
                 <h3 class="text-decoration-underline mt-2">
                     3 Hour Forecast
                 </h3>
-                <div class="tab-content" id="myTabContent">
+                <div id="chart-container" class="chart-wrap mb-4" style=" height:40vh; width:80vw; display: none;">
+                    <h5>Summery</h5>
+                    <canvas id="myChart"></canvas>
+                </div>
+                <div class="tab-content mt-3" id="myTabContent">
+                    <h5>Details</h5>
                     <?php
                     echo  $tabcontent;
                     ?>
@@ -353,8 +453,9 @@ if (!$content) {
 }
     ?>
     <!-- bootstrap js -->
-    <script src=" ./assets/js/bootstrap.min.js">
-    </script>
+    <script src=" ./assets/js/bootstrap.min.js"></script>
+    <!-- chart js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 
     </body>
 

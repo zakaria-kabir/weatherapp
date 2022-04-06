@@ -118,7 +118,7 @@ if (!$content) {
                 </h2>
                 <span class="text-muted">
                     <?php
-                    echo '<span class="text-muted">Longitude: ' . $newweather->lon . '&deg N&emsp; Latitude: ' . $newweather->lon . '&deg E </span>';
+                    echo '<span class="text-muted">Longitude: ' . $newweather->lon . '&deg N&emsp; Latitude: ' . $newweather->lat . '&deg E </span>';
                     ?>
                 </span>
                 <div class="row">
@@ -133,7 +133,7 @@ if (!$content) {
                         </h1>
                     </div>
                     <div class="col-md-4 text-md-start text-center d-flex flex-column justify-content-center">
-                        <p class="">
+                        <p class="" style="color: rgb(225, 225, 225);">
                             <?php
                             echo "Max temp: " . $newweather->temp_max . "&deg; C<br>" . "Min Temp: " . $newweather->temp_min . "&deg; C";
                             ?>
@@ -141,7 +141,7 @@ if (!$content) {
                     </div>
 
                 </div>
-                <div class="pb-1">
+                <div class=" pb-1 mt-md-n4">
                     <h3 class="d-inline">
                         <?php
                         echo $newweather->type;
@@ -158,16 +158,22 @@ if (!$content) {
                     echo '<i class="fa-regular fa-clock"></i> Updated as of: ' . $newweather->time;
                     ?>
                 </p>
-                <p>
+                <p class="mb-0">
                     <?php
                     echo '
                     <i class="fa-solid fa-temperature-quarter"> </i> Feels like: ' . $newweather->feels_like . '&deg; C &emsp;<i class="fas fa-compress-arrows-alt"></i> Pressure: ' . $newweather->pressure . 'hPa &emsp;<i class="fas fa-tint"></i> Humidity: ' . $newweather->humidity . '% &emsp;<i class="fa-solid fa-eye"></i> Visibility: ' . ($newweather->visibility / 1000) . 'Km';
                     ?>
                 </p>
+                <p>
+                    <?php
+                    echo '
+                    <i class="fa-solid fa-wind"> </i> Wind Speed: ' . $newweather->wind_speed . 'm/s &emsp;<i class="fa-solid fa-angles-up"></i> Wind Degree: ' . $newweather->wind_degree . '&deg &emsp;<i class="fa-solid fa-cloud"></i> Cloud: ' . $newweather->cloud . '%';
+                    ?>
+                </p>
             </section>
         </div>
         <!-- eof heading -->
-        <section class="mx-3">
+        <section class="mx-3 mb-4">
             <?php
             if (!isset($_POST["city"])) {
                 $url = "https://api.openweathermap.org/data/2.5/forecast?q=dhaka&appid=d705900452bd53d61fae15651c6fed92&units=metric";
@@ -177,7 +183,6 @@ if (!$content) {
             $content = file_get_contents($url);
             $dc = json_decode($content);
             include "./include/timezone.php";
-
             function getDayHrwisedata(&$dayArr, $dc)
             {
                 $count = 0;
@@ -202,6 +207,8 @@ if (!$content) {
                     $newweatherhr->visibility = $hr3->visibility;
                     $newweatherhr->cloud = $hr3->clouds->all;
                     $newweatherhr->unix = $hr3->dt;
+
+
                     if (empty($newarr)) {
                         array_push($newarr, $newweatherhr);
                     } else {
@@ -210,68 +217,140 @@ if (!$content) {
                         } else {
                             array_push($dayArr, $newarr);
                             $newarr = array();
-                            $count = -1;
+                            array_push($newarr, $newweatherhr);
+                            $count = 0;
                         }
                     }
                     $count++;
                 }
+                array_push($dayArr, $newarr);
             }
             $dayArr = array();
             getDayHrwisedata($dayArr, $dc);
             $tabmenu = '';
             $tabcontent = '';
-            $tabsubsubcontent = '<div class="tab-content">';
+            $tabsubsubcontent = '<div class="tab-content details-tabcontent">';
             // details of an hour
-            function daydetails($hr, $timeid, $count)
+            function daydetails($hr, $timeid)
             {
                 global $tabsubsubcontent;
-                if ($count == 0) {
-                    $tabsubsubcontent .= '
-                <div class="tab-pane fade show active" id="' . $timeid . '" role="tabpanel" aria-labelledby="' . $timeid . '-tab"><p>'
-                        . $timeid . '</p><p>' .
-                        $hr->temp_max . '</p><p>' .
-                        $hr->temp_min . '</p><p>' .
-                        $hr->feels_like . '</p><p>' .
-                        $hr->pressure . '</p><p>' .
-                        $hr->humidity . '</p><p>' .
-                        $hr->wind_speed . '</p><p>' .
-                        $hr->wind_degree . '</p><p>' .
-                        $hr->visibility . '</p><p>' .
-                        $hr->cloud .
-                        '</div>';
-                } else {
-                    $tabsubsubcontent .= '
-                <div class="tab-pane fade" id="' . $timeid . '" role="tabpanel" aria-labelledby="' . $timeid . '-tab"><p>'
-                        . $hr->temp_max . '</p><p>' .
-                        $hr->temp_min . '</p><p>' .
-                        $hr->feels_like . '</p><p>' .
-                        $hr->pressure . '</p><p>' .
-                        $hr->humidity . '</p><p>' .
-                        $hr->wind_speed . '</p><p>' .
-                        $hr->wind_degree . '</p><p>' .
-                        $hr->visibility . '</p><p>' .
-                        $hr->cloud .
-                        '</div>';
-                }
+                $tabsubsubcontent .= '
+                <div class="tab-pane fade" id="' . $timeid . '" role="tabpanel" aria-labelledby="profile-tab"><h4 class="text-decoration-underline"> Details of this hour</h4><p class="text-muted d-inline"><i class="fa-solid fa-temperature-full text-white"></i> Max temp: <span class="text-white">'
+                    . $hr->temp_max . '&deg C</span></p><p class="text-muted d-inline">&emsp;<i class="fa-solid fa-temperature-empty  text-white"></i> Min temp: <span class="text-white">' .
+                    $hr->temp_min . '&deg C</span></p><p class="text-muted d-inline">&emsp;<i class="fa-solid fa-temperature-half  text-white"></i> Feels Like: <span class="text-white">' .
+                    $hr->feels_like . '&deg C</span></p><div></div><p class="text-muted d-inline"><i class="fas fa-compress-arrows-alt  text-white"></i> Pressure: <span class="text-white">' .
+                    $hr->pressure . 'hPa</span></p><p class="text-muted d-inline">&emsp;<i class="fas fa-tint  text-white"></i> Humidity: <span class="text-white">' .
+                    $hr->humidity . '%</span></p><p class="text-muted d-inline">&emsp;<i class="fa-solid fa-eye text-white"></i> Visibility: <span class="text-white">' .
+                    ($hr->visibility) / 1000 . 'Km</span></p><div></div><p class="text-muted d-inline"><i class="fa-solid fa-wind text-white"></i> Wind Speed: <span class="text-white">' .
+                    $hr->wind_speed . 'm/s</span></p><p class="text-muted d-inline">&emsp;<i class="fa-solid fa-angles-up text-white"></i> Wind Degree: <span class="text-white">' .
+                    $hr->wind_degree . '&deg</span></p><p class="text-muted d-inline">&emsp;<i class="fa-solid fa-cloud text-white"></i> Cloud: <span class="text-white">' .
+                    $hr->cloud . '%</span></p>
+                </div>';
             }
             // daily 3hr interval forcast
+            $temparr = array();
+            $labelarr = array();
+            $countchart = 0;
+            $label = '';
+            $temp = '';
+            ?>
+            <script>
+                function chartshow(l, d, count, date, icon) {
+                    let chartStatus = Chart.getChart("myChart");
+                    if (chartStatus != undefined) {
+                        chartStatus.destroy();
+                    }
+                    var img = [];
+                    for (let i = 0; i < icon.length; i++) {
+                        img[i] = new Image(50, 50);
+                        img[i].src = icon[i];
+                    }
+                    var ctx = document.getElementById("myChart").getContext("2d");
+                    Chart.defaults.font.size = 16;
+                    Chart.defaults.color = "#fff";
+                    var myChart = new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels: l,
+                            datasets: [{
+                                data: d,
+                                label: 'Temparature °C',
+                                borderWidth: 2,
+                                borderColor: "#767676",
+                                lineTension: 0.6,
+                                pointStyle: img,
+                            }, ]
+                        },
+                        options: {
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: date,
+                                    font: {
+                                        size: 24
+                                    }
+                                },
+
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    offset: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Time Frame'
+                                    }
+                                },
+                                y: {
+                                    offset: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Temparature ℃'
+                                    }
+                                }
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
+                        }
+                    })
+                }
+
+                function chart(day, count) {
+                    var x = document.getElementById("chart-container");
+                    if (x.style.display == "none") {
+                        x.style.display = "block";
+                    }
+                    var temp = [];
+                    var label = [];
+                    var icon = [];
+                    var dayArr = <?php echo (json_encode($dayArr)); ?>;
+                    var get = dayArr[count];
+                    var date = get[0].date;
+                    for (let i = 0; i < get.length; i++) {
+                        temp.push(get[i].temp);
+                        label.push(get[i].time);
+                        icon.push("http://openweathermap.org/img/wn/" + get[i].weather_icon + ".png");
+                    }
+                    chartshow(label, temp, count, date, icon);
+                }
+            </script>
+            <?php
             function daily3hr($dayArr, $day)
             {
-                $count = 0;
                 global $tabcontent;
                 global $tabsubsubcontent;
                 foreach ($dayArr as $arr) {
                     $tabsubcontent = '<div class="card-group">';
                     $tabsubcontent .= '<ul class="nav nav-tabs" id="myTab" role="tablist">';
                     foreach ($arr as $hr) {
-
                         if ($hr->day == $day) {
                             $stime = date_create_from_format('g:i a', $hr->time);
                             $timeid = $day . date_format($stime, 'gia');
-                            if ($count == 0) {
-                                $tabsubcontent .= '
+                            $tabsubcontent .= '
                             <li class="nav-item" role="presentation">
-                            <button class="nav-link active p-0" id="' . $timeid . '-tab" data-bs-toggle="tab" data-bs-target="#' . $timeid . '" type="button" role="tab" aria-controls="' . $timeid . '" aria-selected="true">
+                            <button class="nav-link p-0" id="' . $timeid . '-tab" data-bs-toggle="tab" data-bs-target="#' . $timeid . '" type="button" role="tab" aria-controls="home" aria-selected="false">
                             <div class="card">
                                 <i><img src="http://openweathermap.org/img/wn/' . $hr->weather_icon . '@2x.png" class=" " alt=""></i>
                                  
@@ -287,29 +366,7 @@ if (!$content) {
                              </button>
                              </li>
                         ';
-                                daydetails($hr, $timeid, $count);
-                            } else {
-                                $tabsubcontent .= '
-                            <li class="nav-item" role="presentation">
-                            <button class="nav-link p-0" id="' . $timeid . '-tab" data-bs-toggle="tab" data-bs-target="#' . $timeid . '" type="button" role="tab" aria-controls="' . $timeid . '" aria-selected="false">
-                            <div class="card">
-                                <i><img src="http://openweathermap.org/img/wn/' . $hr->weather_icon . '@2x.png" class=" " alt=""></i>
-                                 
-                                <div class="card-body">
-                                    <h5 class="card-title">' . $hr->temp . '&deg; C</h5>
-                                    <p class="card-text">' . $hr->type . ' <span class="text-muted"> (' . $hr->typedescription . ')</p>                     
-                                </div>
-                               
-                                <div class="card-footer">
-                                    <small class="text-muted">' . $hr->time . '</small>
-                                </div>
-                            </div>
-                             </button>
-                             </li>
-                        ';
-                                daydetails($hr, $timeid, $count);
-                            }
-                            $count++;
+                            daydetails($hr, $timeid);
                         }
                     }
                     $tabsubcontent .= '</ul></div>' . $tabsubsubcontent . '</div>';
@@ -321,6 +378,7 @@ if (!$content) {
             function day5($dayArr)
             {
                 $count = 0;
+                $c = 0;
                 global $tabmenu;
                 global $tabcontent;
                 $daylist = array();
@@ -328,11 +386,12 @@ if (!$content) {
                     $flag = false;
                     foreach ($arr as $hr) {
                         $day = $hr->day;
+                        $d = "'$day'";
                         array_push($daylist, $day);
                         if ($count == 0 && $flag == false) {
                             $tabmenu .= '
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="' . $day . '-tab" data-bs-toggle="tab" data-bs-target="#' . $day . '"type="button" role="tab" aria-controls="' . $day . '" aria-selected="true"><p>' . $day . ", " . $hr->date . '</p><i><img src="http://openweathermap.org/img/wn/' . $hr->weather_icon . '.png" alt=""></i><h4>' . $hr->temp . '&deg; C</h4><p>' . $hr->type . '</p> </button>
+                        <li class="nav-item" role="presentation ">
+                            <button class="nav-link active" id="' . $day . '-tab" data-bs-toggle="tab" data-bs-target="#' . $day . '"type="button" role="tab" aria-controls="' . $day . '" aria-selected="true" onclick="chart(' . $d . ',' . json_encode($c) . ')"><p>' . $day . ", " . $hr->date . '</p><i><img src="http://openweathermap.org/img/wn/' . $hr->weather_icon . '.png" alt=""></i><h4>' . $hr->temp . '&deg; C</h4><p>' . $hr->type . '</p> </button>
                         </li>
                         ';
                             $tabcontent .= '
@@ -343,10 +402,11 @@ if (!$content) {
                         </div>
                         ';
                             $flag = true;
+                            $c++;
                         } elseif ($day != $daylist[$count - 1] && $flag == false) {
                             $tabmenu .= '
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="' . $day . '-tab" data-bs-toggle="tab" data-bs-target="#' . $day . '"type="button" role="tab" aria-controls="' . $day . '" aria-selected="false"><p>' . $day . ", " . $hr->date . '</p><i><img src="http://openweathermap.org/img/wn/' . $hr->weather_icon . '.png" alt=""></i><h3>' . $hr->temp . '&deg; C</h3><p>' . $hr->type . '</p> </button>
+                            <button class="nav-link" id="' . $day . '-tab" data-bs-toggle="tab" data-bs-target="#' . $day . '"type="button" role="tab" aria-controls="' . $day . '" aria-selected="false" onclick="chart(' . $d . ',' . json_encode($c) . ')"><p>' . $day . ", " . $hr->date . '</p><i><img src="http://openweathermap.org/img/wn/' . $hr->weather_icon . '.png" alt=""></i><h3>' . $hr->temp . '&deg; C</h3><p>' . $hr->type . '</p> </button>
                         </li>
                         ';
                             $tabcontent .= '
@@ -357,6 +417,7 @@ if (!$content) {
                         </div>
                         ';
                             $flag = true;
+                            $c++;
                         }
                         $count++;
                     }
@@ -365,30 +426,36 @@ if (!$content) {
             day5($dayArr);
             ?>
             <div class="text-center d-flex flex-column justify-content-center align-items-center">
-                <h3>
+                <h3 class="text-decoration-underline">
                     5 Day Forecast
-                    </h3>
-                    <ul class="nav nav-tabs item" id="myTab" role="tablist">
-                        <?php
-                        echo $tabmenu;
-                        ?>
-                    </ul>
-                    <h3 class="mt-2">
-                        3 Hour Forecast
-                    </h3>
-                    <div class="tab-content" id="myTabContent">
-                        <?php
-                        echo $tabcontent;
-                        ?>
-                    </div>
+                </h3>
+                <ul class="nav nav-tabs item" id="myTab" role="tablist">
+                    <?php
+                    echo $tabmenu;
+                    ?>
+                </ul>
+                <h3 class="text-decoration-underline mt-2">
+                    3 Hour Forecast
+                </h3>
+                <div id="chart-container" class="chart-wrap mb-4" style=" height:40vh; width:80vw; display: none;">
+                    <h5>Summery</h5>
+                    <canvas id="myChart"></canvas>
+                </div>
+                <div class="tab-content mt-3" id="myTabContent">
+                    <h5>Details</h5>
+                    <?php
+                    echo  $tabcontent;
+                    ?>
+                </div>
             </div>
         </section>
     <?php
 }
     ?>
     <!-- bootstrap js -->
-    <script src=" ./assets/js/bootstrap.min.js">
-    </script>
+    <script src=" ./assets/js/bootstrap.min.js"></script>
+    <!-- chart js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 
     </body>
 

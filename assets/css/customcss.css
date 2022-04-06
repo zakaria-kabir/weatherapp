@@ -22,7 +22,7 @@ p {
   color: rgb(208, 208, 208) !important;
 }
 .nav-item.show .nav-link,
-.nav-link.active{
+.nav-link.active {
   color: #495057;
   background-color: rgba(255, 255, 255, 0.646);
   border-color: #c3c3c3 #dee2e6 #fff;
@@ -46,14 +46,17 @@ p {
 .nav-link.active p {
   color: rgb(44, 44, 44);
 }
+.nav-link.active .text-muted {
+  color: rgb(111, 111, 111) !important;
+}
 p {
   margin: 0 0 0.5em 0;
 }
 .nav,
 .card {
-  background-color: rgba(67, 67, 67, 0.456);
+  background-color: rgba(137, 137, 137, 0.456);
 }
-.tab-content.details-tabcontent{
+.tab-content.details-tabcontent {
   background-color: rgba(103, 103, 103, 0.488);
 }
 body.Thunderstorm {
@@ -156,4 +159,8 @@ body.Tornado {
 }
 input[type='search'] {
   background-color: #d1d1d12b !important;
+}
+#chart-container.chart-wrap {
+  color: #ffffff !important;
+  background-color: rgba(179, 179, 179, 0.456) !important;
 }
