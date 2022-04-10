@@ -42,7 +42,7 @@ if (!isset($_POST["city"])) {
 $content = @file_get_contents($url);
 if (!$content) {
     $status = "City not found...";
-    echo '<div class="d-flex justify-content-center vh-100">
+    echo ' <body><div class="d-flex justify-content-center vh-100">
                 <div class="alert alert-danger align-self-center" role="alert"><h1>'
         . $status .
         '</h1></div>
@@ -107,18 +107,19 @@ if (!$content) {
 
 ?>
 
-    <body class='<?php echo $newweather->type ?>'>
+    <body class='<?php echo $newweather->type ?> n<?php echo $newweather->weather_icon ?>'>
         <!-- heading -->
-        <div class='wrapper container'>
+        <div class="content-wrap">
+        <div class='head-wrapper container'>
             <section class="text-center mt-4 pt-5" id="heading">
                 <h2 class="m-0">
                     <?php
                     echo $newweather->name . ', ' . $newweather->country;
                     ?>
                 </h2>
-                <span class="text-muted">
+                <span class="text-white">
                     <?php
-                    echo '<span class="text-muted">Longitude: ' . $newweather->lon . '&deg N&emsp; Latitude: ' . $newweather->lat . '&deg E </span>';
+                    echo '<span class="">Longitude: ' . $newweather->lon . '&deg N&emsp; Latitude: ' . $newweather->lat . '&deg E </span>';
                     ?>
                 </span>
                 <div class="row">
@@ -229,7 +230,8 @@ if (!$content) {
             getDayHrwisedata($dayArr, $dc);
             $tabmenu = '';
             $tabcontent = '';
-            $tabsubsubcontent = '<div class="tab-content details-tabcontent">';
+            $tabsubsubcontent = '<div class="details mt-2">';
+            $tabsubsubcontent .= '<div class="tab-content details-tabcontent">';
             // details of an hour
             function daydetails($hr, $timeid)
             {
@@ -369,7 +371,7 @@ if (!$content) {
                             daydetails($hr, $timeid);
                         }
                     }
-                    $tabsubcontent .= '</ul></div>' . $tabsubsubcontent . '</div>';
+                    $tabsubcontent .= '</ul></div>' . $tabsubsubcontent . '</div></div>';
                     $tabcontent .= $tabsubcontent;
                     $tabsubcontent = '';
                 }
@@ -449,6 +451,7 @@ if (!$content) {
                 </div>
             </div>
         </section>
+        </div>
     <?php
 }
     ?>
